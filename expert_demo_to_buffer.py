@@ -30,7 +30,7 @@ def run():
     buffer.save(
         os.path.join(
             'buffers',
-            str(cup_idx),
+            f'cup_id:{cup_idx}',
             f'size{buffer_size}_.pth'
         )
     )
