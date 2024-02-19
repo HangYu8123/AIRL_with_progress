@@ -34,7 +34,6 @@ class Buffer(SerializedBuffer):
         self._p = 0
         self.buffer_size = buffer_size
         self.device = device
-
         self.states = torch.empty(
             (buffer_size, *state_shape), dtype=torch.float, device=device)
         self.actions = torch.empty(

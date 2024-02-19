@@ -27,7 +27,7 @@ def read_bag(bagdir):
 def get_all_bag_files(file_path:str=None):
     if file_path is not None:
         file_dir = file_path
-        bag_file_list = [] # bc_utils.py里没有这行
+        bag_file_list = [] 
     else:
         # use default bag file location
         bag_file_list = []
@@ -73,12 +73,12 @@ def read_txt_to_meaasages(file_name_list):
 
 
 # read a list of bags, then convert them into a list of messages
-def whole_bag_to_messages(bag_file_list):
-    messages_list= []
+def whole_bag_to_messages_with_cup_idx(bag_file_list, cup_idx_list):
+    messages_dic= {0:[], 1:[], 2:[], 3:[]}
     for i in range(len(bag_file_list)):
         messages = read_bag(bag_file_list[i])
-        messages_list.append(messages)
-    return messages_list
+        messages_dic[cup_idx_list[i]].append(messages)
+    return messages_dic
 
 # read k trajectories to buffers, if available trajectory is less than k, read them repeatly
 # buffer mus be k length
@@ -94,7 +94,7 @@ def read_one_trajectory_to_each_buffer(k ,buffers, message_list):
             buffer.add_sample(obs,action)
         top = (top + 1) % len(message_list)
 
-def spilt_traj_with_cup_pos_and_read_to_buffer(buffer,message_list,cup_idx_list,cup_idx):
+def spilt_traj_with_cup_pos_and_read_to_buffer(buffer,cup_idx):
     top = 0
     waypoints = []
     action_list = []
@@ -107,23 +107,11 @@ def spilt_traj_with_cup_pos_and_read_to_buffer(buffer,message_list,cup_idx_list,
                 action_list.append(list(message_list[i][j+1].position[:7]))
             # final pos have 0 as action
             action_list.append(list(message_list[i][-1].position[:7]))
+    
     waypoint_idx = list(range(len(waypoints)))
     random.shuffle(waypoint_idx)
-    # shuffle waypoints and action_list
-    # print(len(waypoints))
-    # print(len(action_list))
     waypoints = [waypoints[i] for i in waypoint_idx]
     action_list = [action_list[i] for i in waypoint_idx]
-    # print("each buffer has {} waypoints".format(len(waypoints)//len(buffers)))
-    # num_split = len(waypoints) // len(buffers)
-    # for i in range(len(buffers)):
-    #     buffer = buffers[i]
-    #     for j in range(num_split):
-    #         obs = list(waypoints[top].position[:6])+cup_pos[cup_idx] + icecream_pos
-    #         action = list(waypoints[top].effort[:6])
-    #         buffer.add_sample(obs,action)
-    #         top += 1
-    # random.shuffle(waypoints)
     
     for i in range(len(waypoints)):
         obs = list(waypoints[i].position[:7])
