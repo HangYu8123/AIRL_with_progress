@@ -3,21 +3,21 @@ import argparse
 from datetime import datetime
 import torch
 
-from gail_airl_ppo.env import make_env
-from gail_airl_ppo.buffer import SerializedBuffer
-from gail_airl_ppo.algo import ALGOS
-from gail_airl_ppo.trainer import Trainer
-
+# from airl_ppo.env import make_env
+from airl_ppo.buffer import SerializedBuffer
+from airl_ppo.algo import ALGOS
+from airl_ppo.trainer import Trainer
+from airl_ppo.algo.airl import AIRL
 
 def run(args):
-    env = make_env(args.env_id)
-    env_test = make_env(args.env_id)
+    # env = make_env(args.env_id)
+    # env_test = make_env(args.env_id)
     buffer_exp = SerializedBuffer(
         path=args.buffer,
         device=torch.device("cuda" if args.cuda else "cpu")
     )
 
-    algo = ALGOS['airl'](
+    algo = AIRL(
         buffer_exp=buffer_exp,
         state_shape=env.observation_space.shape,
         action_shape=env.action_space.shape,

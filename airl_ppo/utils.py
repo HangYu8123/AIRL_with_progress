@@ -1,9 +1,8 @@
 from tqdm import tqdm
 import numpy as np
 import torch
-
 from .buffer import Buffer
-
+from .demo_preprocess import *
 
 def soft_update(target, source, tau):
     for t, s in zip(target.parameters(), source.parameters()):
@@ -15,26 +14,19 @@ def disable_gradient(network):
     for param in network.parameters():
         param.requires_grad = False
 
-
-def add_random_noise(action, std):
-    action += np.random.randn(*action.shape) * std
-    return action.clip(-1.0, 1.0)
-
-
-def collect_demo(env, algo, buffer_size, device, std, p_rand, seed=0):
-    env.seed(seed)
+def demo_to_buffer(env, algo, buffer_size, device, std, p_rand, seed=0, observation_space=(7,), action_space=(7,)):
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
 
     buffer = Buffer(
         buffer_size=buffer_size,
-        state_shape=env.observation_space.shape,
-        action_shape=env.action_space.shape,
+        state_shape=observation_space,
+        action_shape=action_space,
         device=device
     )
 
-    total_return = 0.0
+    
     num_episodes = 0
 
     state = env.reset()
@@ -57,12 +49,32 @@ def collect_demo(env, algo, buffer_size, device, std, p_rand, seed=0):
 
         if done:
             num_episodes += 1
-            total_return += episode_return
             state = env.reset()
             t = 0
             episode_return = 0.0
 
         state = next_state
-
-    print(f'Mean return of the expert is {total_return / num_episodes}')
     return buffer
+
+if __name__ == '__main__':
+    observation_space = 7
+    action_space = 7
+
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+
+    buffer = Buffer(
+        buffer_size=buffer_size,
+        state_shape=observation_space,
+        action_shape=action_space,
+        device=device
+    )
+    # cup_idx_list = read_cup_index_from_csv("/home/hang/catkin_ws/src/ldf_with_progress/BC/participant_sheet.csv")
+    cup_idx_list = [2] * 26
+    file_path = "/Users/noahf/Documents/LAB/AABL/data/bags/"
+    bag_file_list = get_all_bag_files(file_path) 
+    msg_list = whole_bag_to_messages(bag_file_list)
+    print(msg_list)
+    #buffer.append(state, action, reward, mask, next_state)
+    
