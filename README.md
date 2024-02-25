@@ -1,4 +1,4 @@
-this repo is in progress and built based on https://github.com/toshikwa/gail-airl-ppo.pytorch
+this repo is in progress and built based on https://github.com/toshikwa/gail-airl-ppo.pytorch, https://github.com/Kinovarobotics/ros_kortex/blob/noetic-devel/kortex_gazebo/readme.md
 
 ### Tranfer raw expert demo to buffer
 
@@ -23,8 +23,6 @@ Execute the following command to launch the simulation environment:
 		additional arguments can be found at: [ros_kortex on GitHub](https://github.com/Kinovarobotics/ros_kortex/blob/noetic-devel/)	
 		
 ## Recording and Replay
-
-Make sure to add `trajectory_record.py` & `trajectory_replay.py` to `CMakeLists.txt` and run `catkin_build`.
 
 ### Recording:
 
