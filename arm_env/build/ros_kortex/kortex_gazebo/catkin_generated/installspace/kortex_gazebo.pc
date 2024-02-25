@@ -1,0 +1,8 @@
+prefix=/home/noahfang/Documents/Lab/AIRL_with_progress/arm_env/install
+
+Name: kortex_gazebo
+Description: Description of kortex_gazebo
+Version: 2.2.2
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

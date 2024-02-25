@@ -1,0 +1,8 @@
+prefix=/home/noahfang/Documents/Lab/AIRL_with_progress/arm_env/devel
+
+Name: kortex_driver
+Description: Description of kortex_driver
+Version: 2.2.2
+Cflags: -I/home/noahfang/Documents/Lab/AIRL_with_progress/arm_env/devel/include
+Libs: -L${prefix}/lib 
+Requires: actionlib_msgs

@@ -14,3 +14,28 @@ python train_imitation.py \
     --buffer buffers/InvertedPendulum-v2/size1000000_std0.01_prand0.0.pth \
     --num_steps 100000 --eval_interval 5000 --rollout_length 2000 --seed 0
 ```
+
+
+## Launch the Simulation Environment
+
+Execute the following command to launch the simulation environment:
+	roslaunch kortex_gazebo spawn_kortex_robot.launch arm:='gen3_lite'
+		additional arguments can be found at: [ros_kortex on GitHub](https://github.com/Kinovarobotics/ros_kortex/blob/noetic-devel/)	
+		
+## Recording and Replay
+
+Make sure to add `trajectory_record.py` & `trajectory_replay.py` to `CMakeLists.txt` and run `catkin_build`.
+
+### Recording:
+
+1. Edit the `bag_file_name` in `trajectory_record.py` to the desired path (e.g., `"xx/xx/xx.bag"`).
+   - This will soon be updated to use `argparse` for command-line arguments like `python trajectory_record.py -filename 123123.bag`.
+
+2. Run `trajectory_record.py` to start recording the trajectory data.
+
+### Replay:
+
+1. Edit the `bag_file_name` in `trajectory_replay.py` to the path where your `.bag` file is stored (e.g., `"xx/xx/xx.bag"`).
+   - This will soon be updated to use `argparse` for command-line arguments like `python trajectory_replay.py -filename 123123.bag`.
+
+2. Run `trajectory_replay.py` to replay the recorded trajectory.

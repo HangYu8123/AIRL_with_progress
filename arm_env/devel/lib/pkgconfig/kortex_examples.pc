@@ -1,0 +1,8 @@
+prefix=/home/noahfang/Documents/Lab/AIRL_with_progress/arm_env/devel
+
+Name: kortex_examples
+Description: Description of kortex_examples
+Version: 2.2.2
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
