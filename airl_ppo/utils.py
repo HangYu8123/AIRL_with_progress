@@ -71,9 +71,6 @@ def demo_to_buffer(file_path, cup_idx, cup_idx_list, device, buffer_size=10000, 
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
 
     buffer = Buffer(
         buffer_size=buffer_size,
