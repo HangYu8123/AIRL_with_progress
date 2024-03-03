@@ -1,4 +1,4 @@
-from ..arm_env.src.armpy import kortex_arm
+from arm_env.src.armpy import kortex_arm
 import numpy as np
 import rospy
 from sensor_msgs.msg import JointState

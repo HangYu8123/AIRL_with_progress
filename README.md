@@ -19,8 +19,10 @@ python train_imitation.py \
 ## Launch the Simulation Environment
 
 Execute the following command to launch the simulation environment:
-	roslaunch kortex_gazebo spawn_kortex_robot.launch arm:='gen3_lite'
-		additional arguments can be found at: [ros_kortex on GitHub](https://github.com/Kinovarobotics/ros_kortex/blob/noetic-devel/)	
+```bash
+roslaunch kortex_gazebo spawn_kortex_robot.launch arm:='gen3_lite'
+```
+additional arguments can be found at: [ros_kortex on GitHub](https://github.com/Kinovarobotics/ros_kortex/blob/noetic-devel/)	
 		
 ## Recording and Replay
 
