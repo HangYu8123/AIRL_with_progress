@@ -1,7 +1,9 @@
+import os
+print("Current working directory:", os.getcwd())
+
 from ..arm_env.src.armpy import kortex_arm
 import numpy as np
 import rospy
-from sensor_msgs.msg import JointState
 class arm_sim:
     def __init__(self, observation_space, action_space, seed=0):
         self.observation_space = observation_space

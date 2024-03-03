@@ -14,9 +14,9 @@ class Trainer:
         self.env = env
         self.env.seed(seed)
 
-        # Env for evaluation.
-        self.env_test = env_test
-        self.env_test.seed(2**31-seed)
+        # # Env for evaluation.
+        # self.env_test = env_test
+        # self.env_test.seed(2**31-seed)
 
         self.algo = algo
         self.log_dir = log_dir
@@ -49,34 +49,35 @@ class Trainer:
             if self.algo.is_update(step):
                 self.algo.update(self.writer)
 
-            # Evaluate regularly.
-            if step % self.eval_interval == 0:
-                self.evaluate(step)
-                self.algo.save_models(
-                    os.path.join(self.model_dir, f'step{step}'))
-
+            # # Evaluate regularly.
+            # if step % self.eval_interval == 0:
+            #     self.evaluate(step)
+            #     self.algo.save_models(
+            #         os.path.join(self.model_dir, f'step{step}'))
+            self.algo.save_models(
+                os.path.join(self.model_dir, f'step{step}'))
         # Wait for the logging to be finished.
         sleep(10)
 
-    def evaluate(self, step):
-        mean_return = 0.0
+    # def evaluate(self, step):
+    #     mean_return = 0.0
 
-        for _ in range(self.num_eval_episodes):
-            state = self.env_test.reset()
-            episode_return = 0.0
-            done = False
+    #     for _ in range(self.num_eval_episodes):
+    #         state = self.env_test.reset()
+    #         episode_return = 0.0
+    #         done = False
 
-            while (not done):
-                action = self.algo.exploit(state)
-                state, reward, done, _ = self.env_test.step(action)
-                episode_return += reward
+    #         while (not done):
+    #             action = self.algo.exploit(state)
+    #             state, reward, done, _ = self.env_test.step(action)
+    #             episode_return += reward
 
-            mean_return += episode_return / self.num_eval_episodes
+    #         mean_return += episode_return / self.num_eval_episodes
 
-        self.writer.add_scalar('return/test', mean_return, step)
-        print(f'Num steps: {step:<6}   '
-              f'Return: {mean_return:<5.1f}   '
-              f'Time: {self.time}')
+    #     self.writer.add_scalar('return/test', mean_return, step)
+    #     print(f'Num steps: {step:<6}   '
+    #           f'Return: {mean_return:<5.1f}   '
+    #           f'Time: {self.time}')
 
     @property
     def time(self):

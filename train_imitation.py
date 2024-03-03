@@ -14,7 +14,7 @@ observation_space = (7,)
 action_space = (7,)
 
 def run(args):
-    # env = make_env(args.env_id)
+    env = make_env(args.env_id)
     # env_test = make_env(args.env_id)
     buffer_exp = SerializedBuffer(
         path=args.buffer,
@@ -35,7 +35,7 @@ def run(args):
         'logs', args.buffer, 'AIRL', f'seed{args.seed}-{time}')
 
     trainer = Trainer(
-        # env=env,
+        env=env,
         # env_test=env_test,
         algo=algo,
         log_dir=log_dir,
