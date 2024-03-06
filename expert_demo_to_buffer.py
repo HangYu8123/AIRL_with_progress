@@ -10,8 +10,8 @@ def run():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     observation_space = (7,)
     action_space = (7,)
-    file_path = "/Users/noahf/Documents/LAB/AABL/data/bags/"
-    cup_idx_list = [2] * 26
+    file_path = "/home/noahfang/Downloads/LfD_with_porgress-master/bags"
+    cup_idx_list = [2] * 40
     # cup_idx_list = read_cup_index_from_csv("/home/hang/catkin_ws/src/ldf_with_progress/BC/participant_sheet.csv")
     cup_idx = 2
     seed = 0

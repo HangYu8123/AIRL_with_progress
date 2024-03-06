@@ -9,6 +9,8 @@ python expert_demo_to_buffer.py
 ### Train Imitation Learning
 
 ```bash
+python train_imitation.py /home/noahfang/Documents/Lab/AIRL_with_progress/train_imitation.py --buffer /home/noahfang/Documents/Lab/AIRL_with_progress/arm_env/buffers/size10000_.pth
+
 python train_imitation.py \
     --algo gail --cuda --env_id InvertedPendulum-v2 \
     --buffer buffers/InvertedPendulum-v2/size1000000_std0.01_prand0.0.pth \

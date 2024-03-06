@@ -42,3 +42,4 @@ class AIRLDiscrim(nn.Module):
         with torch.no_grad():
             logits = self.forward(states, dones, log_pis, next_states)
             return -F.logsigmoid(-logits)
+    

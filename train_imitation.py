@@ -5,20 +5,18 @@ import torch
 
 # from airl_ppo.env import make_env
 from airl_ppo.buffer import SerializedBuffer
-from airl_ppo.algo import ALGOS
 from airl_ppo.trainer import Trainer
 from airl_ppo.algo.airl import AIRL
-
+from airl_ppo.env import arm_sim
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 observation_space = (7,)
 action_space = (7,)
 
 def run(args):
-    env = make_env(args.env_id)
-    # env_test = make_env(args.env_id)
+    env = arm_sim(observation_space=observation_space, action_space=action_space, seed=args.seed)
     buffer_exp = SerializedBuffer(
         path=args.buffer,
-        device=torch.device("cuda" if args.cuda else "cpu")
+        device=device
     )
 
     algo = AIRL(
@@ -31,9 +29,11 @@ def run(args):
     )
 
     time = datetime.now().strftime("%Y%m%d-%H%M")
+    # log_dir = os.path.join(
+    #     './logs', args.buffer, 'AIRL', f'seed{args.seed}-{time}')
     log_dir = os.path.join(
-        'logs', args.buffer, 'AIRL', f'seed{args.seed}-{time}')
-
+    'logs', '/home/noahfang/Documents/Lab/AIRL_with_progress/log', f'seed{args.seed}-{time}')
+    # print(log_dir)
     trainer = Trainer(
         env=env,
         # env_test=env_test,
@@ -55,4 +55,3 @@ if __name__ == '__main__':
     p.add_argument('--seed', type=int, default=0)
     args = p.parse_args()
     run(args)
-

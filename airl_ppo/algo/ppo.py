@@ -1,10 +1,11 @@
 import torch
 from torch import nn
 from torch.optim import Adam
+import os
 
 from .base import Algorithm
-from gail_airl_ppo.buffer import RolloutBuffer
-from gail_airl_ppo.network import StateIndependentPolicy, StateFunction
+from airl_ppo.buffer import RolloutBuffer
+from airl_ppo.network import StateIndependentPolicy, StateFunction
 
 
 def calculate_gae(values, rewards, dones, next_values, gamma, lambd):
@@ -70,11 +71,10 @@ class PPO(Algorithm):
 
     def step(self, env, state, t, step):
         t += 1
-
         action, log_pi = self.explore(state)
         next_state, reward, done, _ = env.step(action)
         mask = False if t == env._max_episode_steps else done
-
+        
         self.buffer.append(state, action, reward, mask, log_pi, next_state)
 
         if done:
@@ -141,4 +141,6 @@ class PPO(Algorithm):
                 'stats/entropy', entropy.item(), self.learning_steps)
 
     def save_models(self, save_dir):
-        pass
+        super().save_models(save_dir)
+        torch.save(self.actor.state_dict(), os.path.join(save_dir, 'actor.pth'))
+        torch.save(self.critic.state_dict(), os.path.join(save_dir, 'critic.pth'))

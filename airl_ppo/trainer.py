@@ -6,13 +6,13 @@ from torch.utils.tensorboard import SummaryWriter
 
 class Trainer:
 
-    def __init__(self, env, env_test, algo, log_dir, seed=0, num_steps=10**5,
+    def __init__(self, env, algo, log_dir, seed=0, num_steps=10**5,
                  eval_interval=10**3, num_eval_episodes=5):
         super().__init__()
 
         # Env to collect samples.
         self.env = env
-        self.env.seed(seed)
+        # self.env.seed(seed)
 
         # # Env for evaluation.
         # self.env_test = env_test
@@ -50,12 +50,13 @@ class Trainer:
                 self.algo.update(self.writer)
 
             # # Evaluate regularly.
-            # if step % self.eval_interval == 0:
+            if step % self.eval_interval == 0:
             #     self.evaluate(step)
             #     self.algo.save_models(
             #         os.path.join(self.model_dir, f'step{step}'))
-            self.algo.save_models(
-                os.path.join(self.model_dir, f'step{step}'))
+                self.algo.save_models(
+                    os.path.join(self.model_dir, f'step{step}'))
+                print(f'Num steps: {step}   ')
         # Wait for the logging to be finished.
         sleep(10)
 

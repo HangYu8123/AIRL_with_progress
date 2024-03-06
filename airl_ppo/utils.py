@@ -80,7 +80,7 @@ def demo_to_buffer(file_path, cup_idx, cup_idx_list, device, buffer_size=10000, 
     )
     bag_file_list = get_all_bag_files(file_path) 
     msg_dic = whole_bag_to_messages_with_cup_idx(bag_file_list, cup_idx_list)
-    
+    print(msg_dic)
     for traj in msg_dic[cup_idx]:
         for i in range(len(traj) - 1):
             dim = observation_space[0]
