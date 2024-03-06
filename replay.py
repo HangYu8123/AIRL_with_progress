@@ -1,73 +1,52 @@
-# #!/usr/bin/env python
-# import rospy
-# import rosbag
-# from kortex_driver.msg import ConstrainedJointAngles, JointAngle
-# from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
-# from sensor_msgs.msg import JointState
-# from kortex_driver.srv import *
-# from armpy import kortex_arm
-# import time
-# class ArmReplayer:
-#     def __init__(self, bag_name):
-#         self.bag = rosbag.Bag(bag_name, 'r')
-#         self.joint_trajectory = ConstrainedJointAngles()
-#         self.arm = kortex_arm.Arm()
-#         self.arm.home_arm()
+from datetime import datetime
+import torch
+from airl_ppo.buffer import SerializedBuffer
+from airl_ppo.algo.airl import AIRL
+from airl_ppo.env import arm_sim
 
-#     def read_bag(self):
-#         play_joint_traj = rospy.ServiceProxy('/my_gen3_lite/base/play_joint_trajectory', PlayJointTrajectory)
-#         #cja = PlayJointTrajectoryRequest()
-#         #cja = ConstrainedJointAngles()
-#         trj = []
-#         #print(cja)
-#         cnt = 0
-#         for topic, msg, t in self.bag.read_messages(topics=['/my_gen3_lite/joint_states']):
-#             cja = PlayJointTrajectoryRequest()
-#             #print(msg)
-#             if cnt == 0:
-#                 self.arm.goto_joint_pose(msg.position[:6])
-#             cnt += 1
-#             if isinstance(msg, JointState) or 1:
-#                 for i in range(10): 
-#                     joint = JointAngle()
-#                     joint.joint_identifier = i 
-#                     joint.value = msg.position[i] * 180 / 3.1415926
-#                     cja.input.joint_angles.joint_angles.append(joint)
-#             # cja.constraint.type = 0
-#             # cja.constraint.value = 0.0
-#             play_joint_traj(cja) 
-#             time.sleep(3)   
-#             print( cja)    
-        
-#     # def read_bag(self):
-#     #     waypoints = []
-#     #     for topic, msg, t in self.bag.read_messages(topics=['/my_gen3_lite/joint_states']):
-#     #         #print("hhhh")
-#     #         #print(msg)
-#     #         if isinstance(msg, JointState) or 1:
-#     #             waypoints.append(msg.position[:6])
-#     #     self.arm.goto_joint_waypoints(waypoints)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+observation_space = (7,)
+action_space = (7,)
 
-#     #     print(self.joint_trajectory)
-#     def play_trajectory(self):
-#         print("start_replay1")
-#         rospy.wait_for_service('/my_gen3_lite/base/play_joint_trajectory')
-#         print("start_replay2")
-#         try:
-#             play_joint_traj = rospy.ServiceProxy('/my_gen3_lite/base/play_joint_trajectory', PlayJointTrajectory)
-#             print("start_replay3")
-#             resp = play_joint_traj(self.joint_trajectory)
-#             rospy.loginfo("Trajectory sent. Service response: %s", resp)
-#         except rospy.ServiceException as e:
-#             rospy.logerr("Service call failed: %s", e)
+env = arm_sim(observation_space=observation_space, action_space=action_space, seed=0)
+buffer_exp = SerializedBuffer(
+    path="/home/noahfang/Documents/Lab/AIRL_with_progress/arm_env/buffers/size10000_.pth",
+    device=device
+)
 
-#     def close_bag(self):
-#         self.bag.close()
+algo = AIRL(
+    buffer_exp=buffer_exp,
+    state_shape=observation_space,
+    action_shape=action_space,
+    device=device,
+    seed=0,
+    rollout_length=50000
+)
+algo.disc.load_state_dict(torch.load("/home/noahfang/Documents/Lab/AIRL_with_progress/log/seed0-20240305-1939/model/step39000/disc.pth"))
+algo.actor.load_state_dict(torch.load("/home/noahfang/Documents/Lab/AIRL_with_progress/log/seed0-20240305-1939/model/step39000/actor.pth"))  
+algo.critic.load_state_dict(torch.load("/home/noahfang/Documents/Lab/AIRL_with_progress/log/seed0-20240305-1939/model/step39000/critic.pth"))
 
-# if __name__ == '__main__':
-#     rospy.init_node('arm_replayer', anonymous=True)
-#     replayer = ArmReplayer('arm_movement.bag')
-#     replayer.read_bag()
-#     #replayer.play_trajectory()
-#     replayer.close_bag()
-#     rospy.spin()
+
+# print(algo.disc.state_dict())
+state = env.reset()
+t = 0
+epoch = 10
+reward_memo = {epoch:[]}
+state_memo = {epoch:[]}
+step = 0
+while epoch > 0:
+    action, log_pi = algo.explore(state)
+    next_state, reward, done, _ = env.step(action)
+    reward = algo.disc.calculate_reward(torch.from_numpy(state).float(), float(done), float(log_pi), torch.from_numpy(next_state).float())
+    state = next_state
+    reward_memo[epoch].append(reward.item()) 
+    step += 1
+    if done:
+        epoch -= 1
+        step = 0
+        state = env.reset()
+        reward_memo[epoch] = []
+        state_memo[epoch] = []
+    print(step, reward.item())
+torch.save(reward_memo, '/home/noahfang/Documents/Lab/AIRL_with_progress/replayed_traj/reward_memo.pt')
+torch.save(state_memo, '/home/noahfang/Documents/Lab/AIRL_with_progress/replayed_traj/state_memo.pt')
