@@ -30,8 +30,10 @@ class arm_sim:
     
     def step(self, action):
         self.arm.goto_joint_pose_sim(action)
-        # print(action)
-        # self.arm.send_gripper_command(action[:-1])
+        if action[-1] - 0.5 < 0.001:
+            self.arm.send_gripper_command(0)
+        else:
+            self.arm.send_gripper_command(1)
         state = self.get_state()
         reward = 0
         rand_int = np.random.randint(0, 1000)
