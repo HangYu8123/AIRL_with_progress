@@ -1,5 +1,5 @@
 this repo is in progress and built based on https://github.com/toshikwa/gail-airl-ppo.pytorch, https://github.com/Kinovarobotics/ros_kortex/blob/noetic-devel/kortex_gazebo/readme.md
-
+this readme is not up-to-date, it will be updated after the paper been submitted.
 ### Tranfer raw expert demo to buffer
 
 ```bash
