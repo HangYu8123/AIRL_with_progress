@@ -1,8 +1,10 @@
 from datetime import datetime
 import torch
+import numpy as np
 from airl_ppo.buffer import SerializedBuffer
 from airl_ppo.algo.airl import AIRL
 from airl_ppo.env import arm_sim
+from airl_ppo.utils import get_all_bag_files, whole_bag_to_messages_with_cup_idx, read_cup_index_from_csv
 
 def read_reward_function_from_dsc():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -56,12 +58,11 @@ def read_reward_function_from_dsc():
             else:
                 done = False
             a, log_pi = algo.explore(state)
-            # algo.disc.calculate_reward(torch.from_numpy(state).float(), done, log_pi, torch.from_numpy(next_state).float())
+            # algo.disc.calculate_reward(torch.from_numpy(state).float(), done, log_pi, torch.from_numpy(next_state).float()).item()
             # algo.disc.h(torch.from_numpy(state).float()).item()
             # algo.disc.g(torch.from_numpy(state).float()).item()
             reward_memo[user_i].append(algo.disc.calculate_reward(torch.from_numpy(state).float(), done, log_pi, torch.from_numpy(next_state).float()).item())
     torch.save(reward_memo, '/home/noahfang/Documents/Lab/AIRL_with_progress/replayed_traj/disc_cal_reward_memo.pt')
-    # torch.save(state_memo, '/home/noahfang/Documents/Lab/AIRL_with_progress/replayed_traj/state_memo.pt')
 
 def replay():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

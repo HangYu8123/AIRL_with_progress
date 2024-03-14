@@ -4,6 +4,7 @@ import torch
 from .buffer import Buffer
 import rospy
 import rosbag
+import re
 from sensor_msgs.msg import JointState
 import os
 import csv
@@ -25,7 +26,7 @@ def read_bag(bagdir):
         temp.effort = msg.effort
         messages.append(temp)
     return messages
-def get_all_bag_files(file_path:str=None):
+def get_all_bag_files(file_path: str = None):
     if file_path is not None:
         file_dir = file_path
         bag_file_list = [] 
@@ -37,13 +38,24 @@ def get_all_bag_files(file_path:str=None):
                 os.path.dirname(
                     os.path.abspath(__file__)
                 )))
-        file_dir = os.path.join(file_dir,"bags/")
+        file_dir = os.path.join(file_dir, "bags/")
     # look through directory to find all bag files
     for root, dirs, files in os.walk(file_dir):
         for file in files:
             if file.endswith(".bag"):
-                bag_file_list.append(os.path.join(root,file))
+                bag_file_list.append(os.path.join(root, file))
+    
+    # Extract user numbers and sort by them
+    def extract_user_number(file_path):
+        match = re.search(r'user_(\d+)', file_path)
+        if match:
+            return int(match.group(1))
+        return -1  # In case the pattern is not found
+
+    bag_file_list.sort(key=extract_user_number)
     return bag_file_list
+
+
 def read_cup_index_from_csv(file_path:str):
     with open(file_path, 'r') as f:
         cup_index = []
